@@ -1,0 +1,52 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using TestAuoGenApi.models_for_auto_gen;
+
+namespace TestAutoGen.Dal
+{
+    
+    public class {{ClassName}}Repo
+    {
+        private readonly DalBase _baseRepo;
+
+        public {{ClassName}}Repo(DalBase dalBase)
+        {
+            _baseRepo = dalBase ?? throw new ArgumentNullException(nameof(dalBase));
+        }
+
+        public List<{{ClassName}}> GetAll()
+        {
+            // Get all {{ClassName}}
+            string selectAllSql = "SELECT * FROM {{ClassName}}";
+            var result = _baseRepo.Query<{{ClassName}}>(selectAllSql).ToList();
+            return result;
+        }
+
+        public {{ClassName}}? GetById(guid input)
+        {
+            // Get {{ClassName}} by Id
+            string selectByIdSql = "SELECT * FROM {{ClassName}} WHERE Id = @Id";
+            var selectByIdParameters = new { input };
+            var result = _baseRepo.FirstOrDefault<{{ClassName}}>(selectByIdSql, selectByIdParameters);
+            return result;
+        }
+
+        public {{ClassName}}? Update({{ClassName}} input)
+        {
+             // Update
+            string updateSql = _baseRepo.GenerateUpdateSql(user);
+            var result = _baseRepo.FirstOrDefault<{{ClassName}}>(updateSql, input);
+            return result;
+        }
+
+        public void Delete({{ClassName}} input)
+        {
+            //Delete users
+            string deleteSql = "DELETE FROM {{ClassName}} WHERE Id = @Id";
+            _baseRepo.Execute(deleteSql, input);
+        }
+    }
+}

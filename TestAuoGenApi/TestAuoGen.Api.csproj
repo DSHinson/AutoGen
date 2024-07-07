@@ -16,4 +16,8 @@
     <ProjectReference Include="..\TestAutoGen.Dal\TestAutoGen.Dal.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Controllers\" />
+  </ItemGroup>
+
 </Project>

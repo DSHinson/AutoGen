@@ -1,6 +1,0 @@
-@TestAuoGenApi_HostAddress = http://localhost:5173
-
-GET {{TestAuoGenApi_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###

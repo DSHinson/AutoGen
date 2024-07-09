@@ -8,14 +8,9 @@ using TestAuoGenApi.models_for_auto_gen;
 namespace TestAutoGen.Dal
 {
     
-    public class UserRepo
+    public class UserRepo(DalBase dalBase)
     {
-        private readonly DalBase _baseRepo;
-
-        public UserRepo(DalBase dalBase)
-        {
-            _baseRepo = dalBase ?? throw new ArgumentNullException(nameof(dalBase));
-        }
+        private readonly DalBase _baseRepo = dalBase ?? throw new ArgumentNullException(nameof(dalBase));
 
         public List<User> GetAllUsers()
         {

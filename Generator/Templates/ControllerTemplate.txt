@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using TestAuoGenApi.models_for_auto_gen;
-using TestAutoGen.Dal
+using TestAutoGen.Dal;
 
 namespace TestAuoGenApi.Controllers
 {
@@ -13,7 +13,7 @@ namespace TestAuoGenApi.Controllers
 
         public {{ClassName}}Controller({{ClassName}}Repo {{ClassName}}Repo)
         {
-            _Repo = param{{ClassName}}Repo ?? throw new ArgumentNullException(nameof({{ClassName}}Repo )); 
+            _Repo = {{ClassName}}Repo ?? throw new ArgumentNullException(nameof({{ClassName}}Repo )); 
         }
 
         [HttpGet]
@@ -25,30 +25,25 @@ namespace TestAuoGenApi.Controllers
         [HttpGet("{id}")]
         public virtual {{ClassName}} GetSingle(Guid id)
         {
-            return _collection.SingleOrDefault(x => x.Id == id);
+            return _Repo.GetUserById();
         }
 
         [HttpPost]
         public virtual void Create({{ClassName}} item)
         {
-            item.Id = Guid.NewGuid();
-            _collection.Add(item);
+            
         }
 
         [HttpPut("{id}")]
         public virtual void Update(Guid id, {{ClassName}} item)
         {
-            var existing = _collection.Single(x => x.Id == id);
-            item.Id = id;
-            _collection.Remove(existing);
-            _collection.Add(item);
+            _Repo.UpdateUser(item);
         }
 
         [HttpDelete("{id}")]
-        public virtual void Delete(Guid id)
+        public virtual void Delete({{ClassName}} item)
         {
-            var existing = _collection.Single(x => x.Id == id);
-            _collection.Remove(existing);
+            _Repo.DeleteUser(item);
         }
     }
 }

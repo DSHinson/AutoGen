@@ -4,9 +4,9 @@ namespace TestAuoGen.Api.models_for_auto_gen
 {
     [AutoGenRepository]
     [AutoGenController]
-    public class User
+    public class ShoppingCart
     {
         public Guid Id { get; set; }
-        public string? Name { get; set; } = null;
+        public List<string> CartItems { get; set; }
     }
 }

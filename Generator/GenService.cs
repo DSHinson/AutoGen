@@ -15,29 +15,29 @@ namespace Generator
     {
         public GenService()
         {
-//#if DEBUG
-//            if (!Debugger.IsAttached)
-//            {
-//                Debugger.Launch();
-//            }
-//#endif
+#if DEBUG
+            if (!Debugger.IsAttached)
+            {
+                Debugger.Launch();
+            }
+#endif
         }
         public void Initialize(IncrementalGeneratorInitializationContext context)
         {
             // used to generate the test console prints with attribute autogen
             // Register a syntax receiver that will be created for each generation pass
-            //IncrementalValuesProvider<ClassDeclarationSyntax> classDeclarations =
-            //    context.SyntaxProvider.CreateSyntaxProvider(
-            //        predicate: static (s, _) => IsClassWithAttribute(s, "Autogen"),
-            //        transform: static (ctx, _) => GetSemanticTargetForGeneration(ctx,"Autogen"))
-            //    .Where(static m => m is not null)!;
+            IncrementalValuesProvider<ClassDeclarationSyntax> classDeclarations =
+                context.SyntaxProvider.CreateSyntaxProvider(
+                    predicate: static (s, _) => IsClassWithAttribute(s, "AutoGenRepository"),
+                    transform: static (ctx, _) => GetSemanticTargetForGeneration(ctx, "AutoGenRepository"))
+                .Where(static m => m is not null)!;
 
-            //// Combine the selected classes into a single collection
-            //IncrementalValueProvider<ImmutableArray<ClassDeclarationSyntax>> classDeclarationProvider =
-            //    classDeclarations.Collect();
+            // Combine the selected classes into a single collection
+            IncrementalValueProvider<ImmutableArray<ClassDeclarationSyntax>> classDeclarationProvider =
+                classDeclarations.Collect();
 
-            //// Register the source output
-            //context.RegisterSourceOutput(classDeclarationProvider, static (spc, classes) => Execute(spc, classes));
+            // Register the source output
+            context.RegisterSourceOutput(classDeclarationProvider, (spc, classes) => ExecuteRepository(spc, classes));
 
 
             //used to generate controllers with attribute autogenController
@@ -88,36 +88,16 @@ namespace Generator
         }
 
 
-        private static void Execute(SourceProductionContext context, ImmutableArray<ClassDeclarationSyntax> classes)
+        private void ExecuteRepository(SourceProductionContext context, ImmutableArray<ClassDeclarationSyntax> classes)
         {
             foreach (var classDeclaration in classes)
             {
                 var className = classDeclaration.Identifier.ToString();
-                var message = $"Class {className} is decorated with [autogen] NEW!!!";
 
-                // Log the message to the Visual Studio output window
-                context.ReportDiagnostic(Diagnostic.Create(
-                    new DiagnosticDescriptor(
-                        id: "AUTOGEN001",
-                        title: "Autogen Class Detected",
-                        messageFormat: message,
-                        category: "Autogen",
-                        DiagnosticSeverity.Info,
-                        isEnabledByDefault: true),
-                    Location.None));
+                var source = GetSourceCodeFor(classDeclaration, "Generator.Templates.RepositoryTemplate.txt");
 
-                var source = $@"
-using System;
 
-public static class {className}AutoGenConsole
-{{
-   public static void print()
-    {{
-        Console.WriteLine(""{message}"");
-    }}
-}}
-";
-                context.AddSource($"{className}AutoGenConsole.g.cs", SourceText.From(source, Encoding.UTF8));
+                context.AddSource($"{className}Repository.g.cs", SourceText.From(source, Encoding.UTF8));
 
             }
         }
@@ -128,19 +108,18 @@ public static class {className}AutoGenConsole
             foreach (var classDeclaration in classes)
             {
                 var className = classDeclaration.Identifier.ToString();
-                var message = $"Class {className} is decorated with [autogen] NEW!!!";
 
-                var source = GetSourceCodeFor(classDeclaration);
+                var source = GetSourceCodeFor(classDeclaration, "Generator.Templates.ControllerTemplate.txt");
 
 
                 context.AddSource($"{className}Controller.g.cs", SourceText.From(source, Encoding.UTF8));
 
             }
         }
-       private string GetSourceCodeFor(ClassDeclarationSyntax symbol, string? template = null)
+       private string GetSourceCodeFor(ClassDeclarationSyntax symbol, string templatePath)
         {
             // If template isn't provieded, use default one from embeded resources.
-            template ??= GetEmbededResource("Generator.Templates.ControllerTemplate.txt");
+            string template = GetEmbededResource(templatePath);
 
             
             // Can't use scriban at the moment, make it manually for now.

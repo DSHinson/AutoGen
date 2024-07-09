@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using TestAuoGenApi.models_for_auto_gen;
+using TestAuoGen.Api.models_for_auto_gen;
 using TestAutoGen.Dal;
 
 namespace TestAuoGenApi.Controllers
@@ -19,31 +19,31 @@ namespace TestAuoGenApi.Controllers
         [HttpGet]
         public virtual List<{{ClassName}}> Get()
         {
-            return _Repo.GetAllUsers();
+            return _Repo.GetAll{{ClassName}}s();
         }
 
         [HttpGet("{id}")]
         public virtual {{ClassName}} GetSingle(Guid id)
         {
-            return _Repo.GetUserById();
+            return _Repo.Get{{ClassName}}ById();
         }
 
         [HttpPost]
         public virtual void Create({{ClassName}} item)
         {
-            _Repo.CreateUser(item);
+            _Repo.Create{{ClassName}}(item);
         }
 
         [HttpPut("{id}")]
         public virtual void Update(Guid id, {{ClassName}} item)
         {
-            _Repo.UpdateUser(item);
+            _Repo.Update{{ClassName}}(item);
         }
 
         [HttpDelete("{id}")]
         public virtual void Delete({{ClassName}} item)
         {
-            _Repo.DeleteUser(item);
+            _Repo.Delete{{ClassName}}(item);
         }
     }
 }

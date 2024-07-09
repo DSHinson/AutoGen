@@ -31,7 +31,7 @@ namespace TestAuoGenApi.Controllers
         [HttpPost]
         public virtual void Create({{ClassName}} item)
         {
-            
+            _Repo.CreateUser(item);
         }
 
         [HttpPut("{id}")]

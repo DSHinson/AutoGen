@@ -32,8 +32,16 @@ namespace TestAutoGen.Dal
         public User? UpdateUser(User user)
         {
             // Update
-            string selectByIdSql = "UPDATE Users SET Name = @Name WHERE Id = @Id";
-            var userById = _baseRepo.FirstOrDefault<User>(selectByIdSql, user);
+            string Sql = _baseRepo.GenerateUpdateSql<User>(user);
+            var userById = _baseRepo.FirstOrDefault<User>(Sql, user);
+            return userById;
+        }
+
+        public User? CreateUser(User user)
+        {
+            // Create
+            string Sql = _baseRepo.GenerateInsertSql<User>(user);
+            var userById = _baseRepo.FirstOrDefault<User>(Sql, user);
             return userById;
         }
 

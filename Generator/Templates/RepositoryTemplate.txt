@@ -3,50 +3,53 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TestAuoGenApi.models_for_auto_gen;
+using TestAuoGen.Api.models_for_auto_gen;
 
 namespace TestAutoGen.Dal
 {
     
-    public class {{ClassName}}Repo
+    public class {{ClassName}}Repo(DalBase dalBase)
     {
-        private readonly DalBase _baseRepo;
+        private readonly DalBase _baseRepo = dalBase ?? throw new ArgumentNullException(nameof(dalBase));
 
-        public {{ClassName}}Repo(DalBase dalBase)
+        public List<{{ClassName}}> GetAll{{ClassName}}s()
         {
-            _baseRepo = dalBase ?? throw new ArgumentNullException(nameof(dalBase));
+            // Get all {{ClassName}}s
+            string selectAllSql = "SELECT * FROM {{ClassName}}s";
+            var {{ClassName}}s = _baseRepo.Query<{{ClassName}}>(selectAllSql).ToList();
+            return {{ClassName}}s;
         }
 
-        public List<{{ClassName}}> GetAll()
-        {
-            // Get all {{ClassName}}
-            string selectAllSql = "SELECT * FROM {{ClassName}}";
-            var result = _baseRepo.Query<{{ClassName}}>(selectAllSql).ToList();
-            return result;
-        }
-
-        public {{ClassName}}? GetById(guid input)
+        public {{ClassName}}? Get{{ClassName}}ById()
         {
             // Get {{ClassName}} by Id
-            string selectByIdSql = "SELECT * FROM {{ClassName}} WHERE Id = @Id";
-            var selectByIdParameters = new { input };
-            var result = _baseRepo.FirstOrDefault<{{ClassName}}>(selectByIdSql, selectByIdParameters);
-            return result;
+            string selectByIdSql = "SELECT * FROM {{ClassName}}s WHERE Id = @Id";
+            var selectByIdParameters = new { Id = 1 };
+            var {{ClassName}}ById = _baseRepo.FirstOrDefault<{{ClassName}}>(selectByIdSql, selectByIdParameters);
+            return {{ClassName}}ById;
         }
 
-        public {{ClassName}}? Update({{ClassName}} input)
+        public {{ClassName}}? Update{{ClassName}}({{ClassName}} {{ClassName}})
         {
-             // Update
-            string updateSql = _baseRepo.GenerateUpdateSql(user);
-            var result = _baseRepo.FirstOrDefault<{{ClassName}}>(updateSql, input);
-            return result;
+            // Update
+            string Sql = _baseRepo.GenerateUpdateSql<{{ClassName}}>({{ClassName}});
+            var {{ClassName}}ById = _baseRepo.FirstOrDefault<{{ClassName}}>(Sql, {{ClassName}});
+            return {{ClassName}}ById;
         }
 
-        public void Delete({{ClassName}} input)
+        public {{ClassName}}? Create{{ClassName}}({{ClassName}} {{ClassName}})
         {
-            //Delete users
-            string deleteSql = "DELETE FROM {{ClassName}} WHERE Id = @Id";
-            _baseRepo.Execute(deleteSql, input);
+            // Create
+            string Sql = _baseRepo.GenerateInsertSql<{{ClassName}}>({{ClassName}});
+            var {{ClassName}}ById = _baseRepo.FirstOrDefault<{{ClassName}}>(Sql, {{ClassName}});
+            return {{ClassName}}ById;
+        }
+
+        public void Delete{{ClassName}}({{ClassName}} {{ClassName}})
+        {
+            //Delete {{ClassName}}s
+            string deleteSql = "DELETE FROM {{ClassName}}s WHERE Id = @Id";
+            _baseRepo.Execute(deleteSql, {{ClassName}});
         }
     }
 }

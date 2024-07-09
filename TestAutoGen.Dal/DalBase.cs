@@ -73,5 +73,19 @@ namespace TestAutoGen.Dal
 
             return $"UPDATE {tableName} SET {setClause} WHERE {whereClause}";
         }
+
+        public string GenerateInsertSql<T>(T obj)
+        {
+            var type = typeof(T);
+            var tableName = type.Name;
+            var properties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                                 .Where(p => p.Name != "Id");
+
+            var columnNames = string.Join(", ", properties.Select(p => p.Name));
+            var valueParameters = string.Join(", ", properties.Select(p => $"@{p.Name}"));
+
+            return $"INSERT INTO {tableName} ({columnNames}) VALUES ({valueParameters})";
+        }
+
     }
 }

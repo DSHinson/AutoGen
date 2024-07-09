@@ -1,7 +1,8 @@
 ﻿using Generator.Attributes;
 
-namespace TestAuoGenApi.models_for_auto_gen
+namespace TestAuoGen.Api.models_for_auto_gen
 {
+    [AutoGenRepository]
     [AutoGenController]
     public class User
     {

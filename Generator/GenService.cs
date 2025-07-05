@@ -22,6 +22,7 @@ namespace Generator
             }
 #endif
         }
+
         public void Initialize(IncrementalGeneratorInitializationContext context)
         {
             // used to generate the test console prints with attribute autogen
@@ -52,8 +53,9 @@ namespace Generator
                 classDeclarationsController.Collect();
 
             // Register the source output
-           context.RegisterSourceOutput(classDeclarationControllerProvider, (spc, classes) => ExecuteController(spc, classes));
+            context.RegisterSourceOutput(classDeclarationControllerProvider, (spc, classes) => ExecuteController(spc, classes));
         }
+
         private static bool IsClassWithAttribute(SyntaxNode node, string attribute)
         {
             // Check if the node is a class declaration with attributes
@@ -66,7 +68,7 @@ namespace Generator
             return false;
         }
 
-        private static ClassDeclarationSyntax GetSemanticTargetForGeneration(GeneratorSyntaxContext context,string namePredicate)
+        private static ClassDeclarationSyntax GetSemanticTargetForGeneration(GeneratorSyntaxContext context, string namePredicate)
         {
             // We already know the node is a ClassDeclarationSyntax
             var classDeclaration = (ClassDeclarationSyntax)context.Node;
@@ -87,9 +89,9 @@ namespace Generator
             return null!;
         }
 
-
         private void ExecuteRepository(SourceProductionContext context, ImmutableArray<ClassDeclarationSyntax> classes)
         {
+            List<string> reposToRegister = new List<string>();
             foreach (var classDeclaration in classes)
             {
                 var className = classDeclaration.Identifier.ToString();
@@ -99,9 +101,32 @@ namespace Generator
 
                 context.AddSource($"{className}Repository.g.cs", SourceText.From(source, Encoding.UTF8));
 
-            }
-        }
+                reposToRegister.Add(className);
 
+            }
+
+            // Load the shared RegisterRepositories template
+            var template = GetEmbededResource("Generator.Templates.RegisterReposTemplate.txt");
+
+            // Create the AddScoped lines
+            StringBuilder sb = new StringBuilder();
+            foreach (string cl in reposToRegister)
+            {
+                sb.AppendLine($"        services.AddScoped<{cl}Repo>();");
+            }
+
+            // If none found, generate a no-op body
+            if (sb.Length == 0)
+            {
+                sb.AppendLine("        // No repositories found to register.");
+            }
+
+            template = template.Replace("{{AddServices}}", sb.ToString());
+
+            var finalSource = template.Replace("{{Namespace}}", "TestAutoGen.Dal");
+
+            context.AddSource("RegisterRepositories.g.cs", SourceText.From(finalSource, Encoding.UTF8));
+        }
 
         private void ExecuteController(SourceProductionContext context, ImmutableArray<ClassDeclarationSyntax> classes)
         {
@@ -116,16 +141,12 @@ namespace Generator
 
             }
         }
-       private string GetSourceCodeFor(ClassDeclarationSyntax symbol, string templatePath)
+
+        private string GetSourceCodeFor(ClassDeclarationSyntax symbol, string templatePath)
         {
-            // If template isn't provieded, use default one from embeded resources.
             string template = GetEmbededResource(templatePath);
 
-            
-            // Can't use scriban at the moment, make it manually for now.
-            return template
-                .Replace("{{ClassName}}", symbol.Identifier.ToString())
-                .Replace("{{Namespace}}", GetNamespaceRecursively(syntaxNode: symbol?.Parent));
+            return template.Replace("{{ClassName}}", symbol.Identifier.ToString()).Replace("{{Namespace}}", GetNamespaceRecursively(syntaxNode: symbol?.Parent));
         }
 
         private string GetEmbededResource(string path)

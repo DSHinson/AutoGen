@@ -1,15 +1,7 @@
-﻿using Generator;
-using Generator.Attributes;
-
+﻿
 namespace TesterConsole
 {
-    [Autogen]
-    public class MyClass
-    {
-    }
 
-    [Autogen]
-    public class Test { }
     public static class Program
     {
         public static void Main()
